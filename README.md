@@ -32,7 +32,7 @@
     - LINUX(리눅스) OS
       + 프로그래머, 전공자가 사용. (웹 서비스라던지, 서버 관리하는데 필수!)
 
-![OS](https://www.google.com/imgres?imgurl=https%3A%2F%2Ft1.daumcdn.net%2Fcfile%2Ftistory%2F246E444E5782046738&imgrefurl=http%3A%2F%2Fflearning-blog.tistory.com%2F17&docid=bb5kCLcVdk_J7M&tbnid=7QRuOXivheZ_dM%3A&vet=10ahUKEwilu9SawtjeAhWOZt4KHQgYCOkQMwhMKBAwEA..i&w=466&h=313&bih=639&biw=1299&q=%EC%9A%B4%EC%98%81%EC%B2%B4%EC%A0%9C%EC%9D%98%20%EC%97%AD%ED%95%A0&ved=0ahUKEwilu9SawtjeAhWOZt4KHQgYCOkQMwhMKBAwEA&iact=mrc&uact=8)
+![OS](https://miro.medium.com/max/832/1*o-ly1HJGekl0pGc64992Yg.png)
 ---
 
 ## 운영체제 역할2 : 사용자와 컴퓨터간의 커뮤니케이션 지원
@@ -287,7 +287,7 @@
 ---
 
 ## 사용자, 응용 프로그램, 운영체제, 컴퓨터 하드웨어 관계
-![Operating_systems](https://en.wikipedia.org/wiki/Operating_system)
+![Operating_systems](https://upload.wikimedia.org/wikipedia/commons/thumb/e/e1/Operating_system_placement.svg/1200px-Operating_system_placement.svg.png)
 > 출처 : 위키피디아
 
 ---
@@ -357,8 +357,8 @@
     + 사용자 모드(User mode)
     + 커널 모드(kernel mode) : 특권 명령어 실행과 원하는 작업 수행을 위한 자원 접근을 가능케 하는 모드
 
-![CPU_Protection_Rings](https://www.google.com/imgres?imgurl=https%3A%2F%2Fupload.wikimedia.org%2Fwikipedia%2Fcommons%2Fthumb%2F2%2F2f%2FPriv_rings.svg%2F1200px-Priv_rings.svg.png&imgrefurl=https%3A%2F%2Fen.wikipedia.org%2Fwiki%2FProtection_ring&docid=wSlIK7OwGnYhxM&tbnid=cANzCn6SmIbkHM%3A&vet=10ahUKEwirhKvchdveAhVF_GEKHV9zAxwQMwg-KAEwAQ..i&w=1200&h=864&bih=669&biw=1299&q=CPU%20Protection%20rings&ved=0ahUKEwirhKvchdveAhVF_GEKHV9zAxwQMwg-KAEwAQ&iact=mrc&uact=8)
-
+![CPU_Protection_Rings](https://upload.wikimedia.org/wikipedia/commons/thumb/2/2f/Priv_rings.svg/300px-Priv_rings.svg.png)
+> 출처: 위키피디아
 > 커널(kernel)이란? 사전적 의미: 알맹이, 핵심 -> OS의 핵심을 의미
 > 쉘(Shell) 이란? 사전적 의미 : 껍데기
 
@@ -475,7 +475,7 @@ main(){
 
   ![multi_processing](https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRO0oeHNKoYdDxWxaRK-CB4ZpD200zHZifYKPuxRTni297acObo)
 
-  ![multi_tasking](https://www.google.co.kr/imgres?imgurl=https%3A%2F%2Ft1.daumcdn.net%2Fcfile%2Ftistory%2F2530B93856BDDFD107&imgrefurl=http%3A%2F%2Fdonghoson.tistory.com%2F17&docid=B64iJKSrRkrGaM&tbnid=LbszBGhKdLADRM%3A&vet=10ahUKEwjT1_fYh_neAhUH_GEKHcLcA2MQMwg8KAEwAQ..i&w=1198&h=900&bih=669&biw=1299&q=%EB%A9%80%ED%8B%B0%20%ED%83%9C%EC%8A%A4%ED%82%B9%20%EB%A9%80%ED%8B%B0%20%ED%94%84%EB%A1%9C%EC%84%B8%EC%8B%B1&ved=0ahUKEwjT1_fYh_neAhUH_GEKHcLcA2MQMwg8KAEwAQ&iact=mrc&uact=8)
+  ![multi_tasking](data:image/png;base64,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)
 
   * 출처 : http://donghoson.tistory.com/15
   * 멀티 태스킹 : 단일 CPU
