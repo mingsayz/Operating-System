@@ -473,9 +473,10 @@ main(){
 
 ## 멀티 태스킹과 멀티 프로세싱
 
-  ![multi_processing](https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRO0oeHNKoYdDxWxaRK-CB4ZpD200zHZifYKPuxRTni297acObo){: width="200" height="200"}
+  ![multi_processing](https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRO0oeHNKoYdDxWxaRK-CB4ZpD200zHZifYKPuxRTni297acObo)
 
-  ![multi_tasking](https://t1.daumcdn.net/cfile/tistory/2530B93856BDDFD107){: width="200" height="200"}
+  ![multi_tasking](https://t1.daumcdn.net/cfile/tistory/2530B93856BDDFD107 = 250x)
+  <img src="https://t1.daumcdn.net/cfile/tistory/2530B93856BDDFD107" width="200" height="200" />
 
   * 출처 : http://donghoson.tistory.com/15
   * 멀티 태스킹 : 단일 CPU
