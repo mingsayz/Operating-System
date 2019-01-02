@@ -587,8 +587,8 @@ main(){
   * 출처 : http://karhem.tistory.com/38
 
   * FIFO는 자료구조 (QUEUE)와 아주 유사함.
-![QUEUE](https://t1.daumcdn.net/cfile/tistory/2252373557CA885B0A)
-  * 출처 : http://leanq.tistory.com/category/%EA%B0%9C%EB%B0%9C/%EC%95%8C%EA%B3%A0%EB%A6%AC%EC%A6%98%2C%EC%9E%90%EB%A3%8C%EA%B5%AC%EC%A1%B0
+![QUEUE](https://www.studytonight.com/data-structures/images/introduction-to-queue.png)
+  * 출처 : https://www.studytonight.com/data-structures/queue-data-structure
 
 ---
 
@@ -912,6 +912,7 @@ main(){
 
 ---
 ## 프로세스와 컨텍스트 스위칭
+
   * 컨텍스트 스위칭 : 멀티프로세스 환경에서 CPU가 어떤 하나의 프로세스를 실행하고 있는 상태에서 인터럽트 요청에 의해 다음 우선 순위의 프로세스가 실행되어야 할 때 기존의 프로세스의 상태 또는 레지스터 값(Context)을 저장하고 CPU가 다음 프로세스를 수행하도록 새로운 프로세스의 상태 또는 레지스터 값(Context)를 교체하는 작업을 Context Switch(Context Switching)라고 한다.
 
   * PC(Program Counter) + SP(Stack Pointer) 와 프로세스로 컨텍스트 스위칭을 가능하게 만든다.
@@ -922,7 +923,7 @@ main(){
   * 그래서 Context Switching 때 PCB의 정보를 읽어(적재) CPU가 전에 프로세스가 일을 하던거에 이어서 수행이 가능한 것이다.
     - 1. process A 의 PC : 0002h SP : EFFEh
     - 2. process B 의 PC : 0004h SP : EFFEh
-    - 이 정보(context)를 PCB에 저장해두고 A를 ready상태로 만들고 B를 running 시킨다.
+    - 이 정보(context)를 PCB에 저장해두고 A를 ready 상태로 만들고 B를 running 시킨다.
 
   * PCB의 저장정보
     - process ID
@@ -933,3 +934,6 @@ main(){
   > PCB는 프로세스가 실행중인 상태를 캡쳐/구조화 해서 저장
 
   > Context Switching 때 해당 CPU는 아무런 일을 하지 못한다. 따라서 컨텍스트 스위칭이 잦아지면 오히려 오버헤드가 발생해 효율(성능)이 떨어진다. 그래서 PC,SP에 메모리 주소를 쓰는 과정은 instruction이 적은 어셈블리어로 작성되는 경우가 많다.
+
+
+  * 
