@@ -4,11 +4,12 @@
 시스템 소프트웨어이다. 최근에는 실제 하드웨어가 아닌 하이퍼바이저 위에서 실행되기도 한다.
 
 ## 운영체제의 역할1. 시스템 자원(System Resource) 관리자
-    * 시스템 자원(System Resource) = 컴퓨터 하드웨어
-      + CPU (중앙처리장치) , Memory(DRAM,RAM)
-      + I/O Devices(입출력 장치)
-        - Monitor,Mouse,Keyboard,Network
-      + 저장매체 : SSD,HDD (하드디스크)
+
+  * 시스템 자원(System Resource) = 컴퓨터 하드웨어
+    + CPU (중앙처리장치) , Memory(DRAM,RAM)
+    + I/O Devices(입출력 장치)
+      - Monitor,Mouse,Keyboard,Network
+    + 저장매체 : SSD,HDD (하드디스크)
 
 ---
 
@@ -143,7 +144,7 @@
 ## 시분할 시스템과 멀티 태스킹
 
   * 시분할 시스템: 다중 사용자를 지원하고, 컴퓨터 응답 시간을 최소화하는 시스템
-    + **다중 사용자** 를 지원한다는 것은 응답시간을 최소화 해야함! ( 컴퓨터 응답시간: 다음 응용프로그램이 실행되기까지 걸리는 시간 )
+    + **다중 사용자** 를 지원한다는 것은 응답시간을 최소화 해야함! (컴퓨터 응답시간: 다음 응용프로그램이 실행되기까지 걸리는 시간)
 
   * 멀티 태스킹: 가능한 CPU를 많이 활용하도록 하는 기능 (시간대비 CPU 사용율을 높이는 것)
     + 단일 CPU에서, 여러 응용 프로그램의 병렬 실행을 가능케 하는 시스템
@@ -898,12 +899,23 @@ main(){
   int main(){
     int \*data; // main 함수 안에서 선언된 지역 변수 : stack 영역에 올라감
     data = (int \*) malloc(sizeof(int))
-    \*data = 1;
-    printf("%d\n",\*data);
+    * data = 1;
+    printf("%d\n",* data);
     return 0;
   }
-  
+
 ```
   * BSS : 초기화 되지 않은 전역 변수
-
   * DATA : 초기값이 있는 전역 변수
+
+---
+
+```c
+  void copy(char *bar){
+    char data[6];
+    strcpy(data,bar);
+  }
+  int main(int argc,char \*\*argv){
+
+  }
+```
