@@ -833,7 +833,8 @@ main(){
       > c언어의 malloc() : 동적으로 특정 메모리 공간을 생성
 
     - SP(stack pointer) + PC(program counter)
-      + 스택 포인터는 스택 영역의 가장 최상단 부분의 주소를 가리키고 있고, 프로그램 카운터는 코드 영역의 맨 처음 코드의 주소를 가리키고 있다.
+      + 맨 처음 스택 포인터는 스택 영역의 가장 최상단 부분의 주소를 가리키고 있고, 마찬가지로 프로그램 카운터도 코드 영역의 맨 처음 코드의 주소를 가리키고 있다.
+      + 스택이 쌓일 때마다 그 top을 스택 포인터가 가리킨다. 프로그램 카운터도 스택 포인터와 마찬가지로 코드영역에서 실행되고 있는 해당 라인의 주소값을 가지고 있다.
 
     - EBP 레지스터
       + 함수가 함수를 호출하고 그 함수가 또 함수를 호출하다 문제가 생기면 어느 function에서 문제가 생겼는지 모르는 경우가 생긴다.
@@ -858,10 +859,10 @@ main(){
   #include <stdlib.h>
 
   int main(){
-    int \*data;
-    data = (int \*) malloc(sizeof(int)); //동적으로 메모리를 생성하는 함수. 해당 라인은 32bit의 메모리크기를 할당받음. 실제 heap 공간에 적재되는 라인 // free(data) 해서 메모리를 해제시키면 heap영역에서 없어짐
-    \*data = 1;
-    printf("%d\n",\*data);
+    int * data;
+    data = (int * ) malloc(sizeof(int)); //동적으로 메모리를 생성하는 함수. 해당 라인은 32bit의 메모리크기를 할당받음. 실제 heap 공간에 적재되는 라인 // free(data) 해서 메모리를 해제시키면 heap영역에서 없어짐
+    * data = 1;
+    printf("%d\n",* data);
 
     return 0;
   }
@@ -870,8 +871,8 @@ main(){
 > 파이썬 같은 언어의 경우 신경쓸 필요가 없다!
 
 * main함수가 실행되면 stack 영역에 Return address(RET)를 할당한다.
-* 결국 stack 영역에 적재된 \*data 는 heap 영역에 할당받은 메모리 공간의 주소를 가진다. (Ex. data = 1000h)
-* heap 영역에는 \*data = 1; 이라고 정의했으므로 해당 data가 가리키는 주소에는 '1' 이라는 값을 가진다.
+* 결국 stack 영역에 적재된 * data 는 heap 영역에 할당받은 메모리 공간의 주소를 가진다. (Ex. data = 1000h)
+* heap 영역에는 * data = 1; 이라고 정의했으므로 해당 data가 가리키는 주소에는 '1' 이라는 값을 가진다.
 
 ---
 
@@ -889,6 +890,7 @@ main(){
 ---
 
 ## BSS , DATA
+
 ```c
   #include <stdio.h>
   #include <stdlib.h>
@@ -897,8 +899,8 @@ main(){
   int global_data2 = 1; //초기화 된 전역 변수
 
   int main(){
-    int \*data; // main 함수 안에서 선언된 지역 변수 : stack 영역에 올라감
-    data = (int \*) malloc(sizeof(int))
+    int * data; // main 함수 안에서 선언된 지역 변수 : stack 영역에 올라감
+    data = (int * ) malloc(sizeof(int))
     * data = 1;
     printf("%d\n",* data);
     return 0;
@@ -909,13 +911,25 @@ main(){
   * DATA : 초기값이 있는 전역 변수
 
 ---
+## 프로세스와 컨텍스트 스위칭
+  * 컨텍스트 스위칭 : 멀티프로세스 환경에서 CPU가 어떤 하나의 프로세스를 실행하고 있는 상태에서 인터럽트 요청에 의해 다음 우선 순위의 프로세스가 실행되어야 할 때 기존의 프로세스의 상태 또는 레지스터 값(Context)을 저장하고 CPU가 다음 프로세스를 수행하도록 새로운 프로세스의 상태 또는 레지스터 값(Context)를 교체하는 작업을 Context Switch(Context Switching)라고 한다.
 
-```c
-  void copy(char *bar){
-    char data[6];
-    strcpy(data,bar);
-  }
-  int main(int argc,char \*\*argv){
+  * PC(Program Counter) + SP(Stack Pointer) 와 프로세스로 컨텍스트 스위칭을 가능하게 만든다.
+  ![컨텍스트스위칭](https://3.bp.blogspot.com/-5ns5eRUHBK4/VMU3cOyU95I/AAAAAAAAAB4/h8xD6Ym_xS4/s1600/2.jpg)
+  > 출처 : https://3.bp.blogspot.com
 
-  }
-```
+  * OS에서 Context는 CPU가 해당 프로세스를 실행하기 위한 프로세스의 정보(PC,SP 등)들인데, 이 Context는 각각 프로세스의 PCB(Process Control Block)에 저장된다.
+  * 그래서 Context Switching 때 PCB의 정보를 읽어(적재) CPU가 전에 프로세스가 일을 하던거에 이어서 수행이 가능한 것이다.
+    - 1. process A 의 PC : 0002h SP : EFFEh
+    - 2. process B 의 PC : 0004h SP : EFFEh
+    - 이 정보(context)를 PCB에 저장해두고 A를 ready상태로 만들고 B를 running 시킨다.
+
+  * PCB의 저장정보
+    - process ID
+    - Register 값 (PC,SP 등)
+    - Scheduling info (process State) : ready, running, block
+    - Memory info (메모리 사이즈)
+
+  > PCB는 프로세스가 실행중인 상태를 캡쳐/구조화 해서 저장
+
+  > Context Switching 때 해당 CPU는 아무런 일을 하지 못한다. 따라서 컨텍스트 스위칭이 잦아지면 오히려 오버헤드가 발생해 효율(성능)이 떨어진다. 그래서 PC,SP에 메모리 주소를 쓰는 과정은 instruction이 적은 어셈블리어로 작성되는 경우가 많다.
