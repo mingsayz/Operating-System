@@ -849,3 +849,61 @@ main(){
  > c언어는 컴파일 언어이므로 코드들이 한 번에 코드 영역으로 올라가서 컴파일 되어 실행 파일이 생기지만 , 파이썬 등의 인터프리터 언어는 번역과  실행이 동시에 이뤄진다.
 
 ---
+
+### heap 영역은 ?
+
+```c
+  #include <stdio.h>
+  #include <stdlib.h>
+
+  int main(){
+    int \*data;
+    data = (int \*) malloc(sizeof(int)); //동적으로 메모리를 생성하는 함수. 해당 라인은 32bit의 메모리크기를 할당받음. 실제 heap 공간에 적재되는 라인 // free(data) 해서 메모리를 해제시키면 heap영역에서 없어짐
+    \*data = 1;
+    printf("%d\n",\*data);
+
+    return 0;
+  }
+```
+
+> 파이썬 같은 언어의 경우 신경쓸 필요가 없다!
+
+* main함수가 실행되면 stack 영역에 Return address(RET)를 할당한다.
+* 결국 stack 영역에 적재된 \*data 는 heap 영역에 할당받은 메모리 공간의 주소를 가진다. (Ex. data = 1000h)
+* heap 영역에는 \*data = 1; 이라고 정의했으므로 해당 data가 가리키는 주소에는 '1' 이라는 값을 가진다.
+
+---
+
+#### 컴파일러의 처리
+  * 처음에 컴파일러에서 정의되어있는 \_start()가 실행되고 그 안에 main()이라는 함수가 들어있는데, 그 안에서 우리가 만든 c프로그램이 실행되고, 다 실행된 후에 '프로세스 종료 처리'가 발생하고 끝난다.
+
+---
+
+## 프로세스 구조: Stack,HEAP,DATA(BSS,DATA),TEXT(CODE) 영역
+  > DATA 영역을 BSS 와 DATA로 분리
+
+  ![Data영역](http://twimgs.com/ddj/images/article/2012/0612/stack2.gif)
+  > 출처 : http://www.drdobbs.com/security/anatomy-of-a-stack-smashing-attack-and-h/240001832
+
+---
+
+## BSS , DATA
+```c
+  #include <stdio.h>
+  #include <stdlib.h>
+
+  int global_data1; // 초기화 되지 않은 전역변수
+  int global_data2 = 1; //초기화 된 전역 변수
+
+  int main(){
+    int \*data; // main 함수 안에서 선언된 지역 변수 : stack 영역에 올라감
+    data = (int \*) malloc(sizeof(int))
+    \*data = 1;
+    printf("%d\n",\*data);
+    return 0;
+  }
+  
+```
+  * BSS : 초기화 되지 않은 전역 변수
+
+  * DATA : 초기값이 있는 전역 변수
