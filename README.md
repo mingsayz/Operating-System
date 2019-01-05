@@ -1033,3 +1033,76 @@ main(){
     - IPC(InterProcess Communication)
   * 대부분 IPC 기법은 결국 커널 공간을 활용하는 것이다.
     - WHY? 커널 공간은 프로세스간에 공유하기 때문에
+
+---
+## IPC 기법 : 파이프
+  * 기본 파이프는 단방향 통신 (부모 -> 자식)
+    - 부모 프로세스는 fd[1]으로 write로 쓰기만 하고, 자식 프로세스는 fd[0]로 읽기만 한다.
+    - 부모 프로세스에서 fd[0]으로 read는 불가능하고 , 자식 프로세스에서 fd[1]로 write하는 것은 불가능하다.
+  * fork()로 자식 프로세스를 만들었을 때, 부모와 자식간의 통신
+  ![pipe](http://forum.falinux.com/_clibimages/195_pipe_3.png)
+
+---
+## IPC 기법 : message queue
+  * 큐니까, 기본은 FIFO 정책으로 데이터 전송
+  ![queue](https://cdn-images-1.medium.com/max/1600/1*6Mq-ogES1TuIFxlC7bMcXw.png)
+  > 출처 : https://medium.com/@ramyjzh/data-structures-for-dummies-stacks-queues-5785694cd87f
+
+  * 메세지 큐 예제
+    - A프로세스
+    ```c
+    msqid = msgget(key,msgflg) //key는 1234,msgflg는 옵션
+    msgsnd(msqid,&sbuf,buf_length,IPC_NOWAIT)
+    ```
+    - B프로세스
+    ```c
+    msqid = msgget(key,msgflg) //key는 동일하게 1234로 해야 해당 큐의 msgid를 얻을 수 있음
+    msgrcv(msqid,&rbuf,MSGSZ,1,0)
+    ```
+    > 보통은 ftok()를 이용하여 pathname(존재하고 접근 가능한 파일 혹은 디렉토리)과 proj_id값의 조합으로 IPC에서 사용할 key값을 얻는다.
+     key_t key = ftok(const char * path, int id);
+
+---
+## 파이프와 메세지 큐
+  * message queue는 부모/자식이 아니라(fork()할 필요가 없다), 어느 프로세스간에라도 데이터 송수신이 가능
+  * 먼저 넣은 데이터가, 먼저 읽혀진다.
+
+## pipe vs message queue
+  * 부모/자식 프로세스간 only or not
+  * 단방향만 가능 or 양방향 가능
+
+> pipe, message queue 모두 프로세스간 데이터 송수신을 위해 kernel 공간의 메모리를 사용한다.
+
+![pipe_messageQueue](https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQH65n5JjvdiVzHObszghWzstmXGXUwgg7zjUQ5C8WPiTVI3o5Q)
+> 출처 : https://static.ernw.de/whitepaper/ERNW_Newsletter_54_Xenpwn_v.1.0_signed.pdf
+
+---
+## 공유 메모리(shared memory)
+  * 노골적으로 kernel space에 메모리 공간을 만들고, 해당 공간을 변수처럼 쓰는 방식
+  * message queue 처럼 FIFO 방식이 아니라, 해당 메모리 주소를 마치 변수처럼 접근하는 방식
+  * 공유 메모리 key를 가지고, 여러 프로세스가 접근가능
+  ![shared_memory](http://www.tipssoft.com/data/cheditor/1212/__copy.jpg)
+---
+## 공유 메모리 예제
+  * 1. 공유 메모리 생성 및 공유 메모리 주소 얻기
+  ```c
+  shmid = shmget((key_t)1234,SIZE,IPC_CREAT |0666); // 공유 메모리 생성: int shmget(key_t key, size_t size, int shmflg);
+  shmaddr = shmat(shmid,(void *)0,0) // 공유 메모리 연결: void *shmat(int shmid, const void *shmaddr, int shmflg);
+  ```
+  * 2. 공유 메모리에 쓰기
+  ```c
+  strcpy((char *)shmaddr,"Linux programming"); //메모리의 주소에 바로 해당 문자열을 쓴다.
+  ```
+
+  * 3. 공유 메모리에서 읽기
+  ```c
+  printf("%s\n",(char *)shmaddr); //메모리의 주소에 있는 문자열을 바로 읽어들인다.
+  ```
+  * 4. 공유 메모리 해제
+  ```c
+  int shmdt(char *shmaddr);
+  ```
+  * 5. 공유 메모리 제어
+  ```c
+  int shmctl(int shmid, int cmd, struct shmid_ds *buf);
+  ```
