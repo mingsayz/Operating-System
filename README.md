@@ -398,19 +398,23 @@
 
 ## code example1
 
-> #include ~~
+```c
+#include ~~
 int main(){
   int fd; // 이까지는 사용자 모드
   fd = open("data.txt",O_RDONLY); // 해당 파일은 저장매체에 저장되어 있으므로 접근하려면 커널모드로 접근해야함. (open()이라는 API 시스템콜 호출)
 }
+```
 
 ---
 
 ## code example2
 
-> #include <unistd.h>
+```c
+ #include <unistd.h>
 main(){
   open()} --> 함수 호출
+```
 
 > 헤더파일(해당 API(open)의 시스템 콜을 사용하기위해) unistd.h 파일 -> open 선언
 
@@ -681,6 +685,7 @@ main(){
 
 ## 컴퓨터 구조
   * 컴퓨터의 레지스터에는 sp(stack pointer), pc(program counter) 등이 있는데, 이 중 pc는 메인 메모리의 instruction의 주소값을 저장하고 있다.
+    - pc : 다음에 실행할 명령어의 주소를 기억하고 있는 중앙처리장치의 레지스터 중 하나
   * 코드 안에서 프로그램 카운터는 각 각의 코드들의 주소값을 순차적으로 가지게 되는데, CPU는 현재 pc가 가지고 있는 코드를 실행 한다.
   * 파일 입출력 등의 이벤트를 CPU에게 알려주는 것을 '인터럽트 한다' 고 표현
 
@@ -694,6 +699,9 @@ main(){
   * IO Device와의 커뮤니케이션
     - 저장매체에서 데이터 처리 완료시, 프로세스를 깨워야 함(block state -> ready state)
     - 이때 CPU는 다른 프로세스를 처리하고 있는데 , 이 처리 완료 상태를 CPU에게 알림
+    - IO 관련 처리에는 수많은 인터럽트와 시스템콜, 스케쥴러 등의 동작이 일어난다. 즉, 코드를 짤 때 빈번한 I/O 처리는 엄청난 오버헤드를 발생시킨다. 그래서 왠만하면 한방에 데이터를 읽어서 메모리에 넣고 메모리에서 다 처리할 수 있도록 프로그램 구조를 만드려고 노력하는 것이 중요.
+      + 그래서 옛날 빅데이터 I/O 처리는 저장 매체에서 액세스하여 엄청난 오버헤드를 발생시켰지만, 요즘은 'spark'라는 플랫폼을 이용하여 모든 데이터를 한 번에 메모리에 올려서 드라마틱하게 처리 속도가 향상되었다.
+      + 빈번한 I/O 처리가 요즘 이슈가 됨.  
 
   * 예외 상황 핸들링
     - CPU가 프로그램을 실행하고 있을 때, 입출력 하드웨어 등의 장치나 또는 예외사항이 발생한 경우 CPU가 해당 처리를 할 수 있도록 CPU에 알려줘야함
@@ -834,7 +842,7 @@ main(){
 
     - SP(stack pointer) + PC(program counter)
       + 맨 처음 스택 포인터는 스택 영역의 가장 최상단 부분의 주소를 가리키고 있고, 마찬가지로 프로그램 카운터도 코드 영역의 맨 처음 코드의 주소를 가리키고 있다.
-      + 스택이 쌓일 때마다 그 top을 스택 포인터가 가리킨다. 프로그램 카운터도 스택 포인터와 마찬가지로 코드영역에서 실행되고 있는 해당 라인의 주소값을 가지고 있다.
+      + 스택이 쌓일 때마다 그 top을 스택 포인터가 가리킨다. 프로그램 카운터도 스택 포인터(sp)와 마찬가지로 코드영역에서 실행되고 있는 해당 라인의 주소값을 가지고 있다.
 
     - EBP 레지스터
       + 함수가 함수를 호출하고 그 함수가 또 함수를 호출하다 문제가 생기면 어느 function에서 문제가 생겼는지 모르는 경우가 생긴다.
@@ -1106,3 +1114,101 @@ main(){
   ```c
   int shmctl(int shmid, int cmd, struct shmid_ds *buf);
   ```
+
+---
+## 많이 사용하는 IPC기법
+> IPC 기법이지만, 이외에도 많이 사용되는 두 가지 기술
+
+  * 시그널 (signal)
+  * 소켓 (socket)
+
+---
+## 시그널(signal) : 이벤트
+  * 유닉스에서 30년 이상 사용된 전통적인 기법
+  * 커널 또는 프로세스에서 다른 프로세스에 어떤 이벤트가 발생되었는 지를 알려주는 기법
+  * 프로세스 관련 코드에 관련 시그널 핸들러를 등록해서, 해당 시그널 처리 실행
+    - 시그널 무시
+    - 시그널 블록(블록을 푸는 순간, 프로세스에 해당 시그널 전달)
+    - 등록된 시그널 핸들러로 특정 동작 수행
+    - 등록된 시그널 핸들러가 없다면, 커널에서 기본 동작 수행
+
+---
+## 주요 시그널
+  > 주요 시그널: 기본 동작
+
+  * SIGKILL : 프로세스를 죽여라 (슈퍼관리자가 사용하는 시그널로, 프로세스는 어떤 경우든 죽도록 되어 있음)
+  * SIGALARM : 알람을 발생한다.
+  * SIGSTP : 프로세스를 멈춰라(Ctrl + z)
+  * SIGCONT : 멈춰진 프로세스를 실행해라
+  * SIGINT : 프로세스에 인터럽트를 보내서 프로세스를 죽여라(Ctrl + c)
+  * SIGSEGV : 프로세스가 다른 메모리 영역을 침범했다.
+  * SIGUSR1 , SIGUSR2 : 기본 동작이 정의되어있지 않고 프로그램으로 프로세스를 만들때 특정 signal이 특별 동작을 취하도록 정의할 수 있다.
+    - SIGINT는 원래 프로세스를 죽이는 시그널이지만 , SIGUSR1을 이용하여 다른 특별 동작을 행하도록 정의할 수 있다.
+  > 시그널 종류 : kill -l (리눅스 터미널에서 쳐보면 종류를 알 수 있다.)
+
+---
+## 시그널과 프로세스
+  * PCB에 해당 프로세스가 블록 또는 처리해야하는 시그널 관련 정보 관리
+    - process ID
+    - Register 값 (PC,SP 등)
+    - Scheduling info (process State) : ready, running, block
+    - Memory info (메모리 사이즈)
+    - 처리할 시그널 관련 정보
+
+  > 프로세스가 동작할 때 사용자 모드(3GB) 커널 모드(1GB) 사이에 엄청 나게 많은 스위칭이 일어난다. 저장 매체로의 접근이나 시스템 콜, 인터럽트 등이 발생했을 때 커널 모드로 전환이 되는데(Protection ring 부분 참고), 사용자 모드에서 커널 모드로 전환해서 그 task를 처리한후 사용자 모드로 전환되는 시점에 해당 프로세스의 PCB signal 자료구조를 확인하여 해당 프로세스에 대한 처리가 필요하다면 처리를 담당하는 커널 함수를 실행한 후에 사용자 모드로 돌아간다. 즉, 커널 모드 -> 사용자 모드 전환시 시그널 처리가 발생한다.
+
+---
+
+## 소켓(socket)
+  * 소켓은 네트워크 통신을 위한 기술
+  * 기본적으로는 클라이언트와 서버등 두 개의 다른 컴퓨터간의 네트워크 기반 통신을 위한 기술
+  * 또 하나의 컴퓨터 안에서, 두 개의 프로세스간에 통신 기법(IPC)으로 사용 가능
+
+---
+
+## 정리
+  ![process](http://twimgs.com/ddj/images/article/2012/0612/stack2.gif)
+  > 출처 :http://www.drdobbs.com/security/anatomy-of-a-stack-smashing-attack-and-h/240001832
+
+---
+## Thread(스레드)
+![computer_system](https://t1.daumcdn.net/cfile/tistory/201A67014B71521146)
+  > 시스템 소프트웨어에는 API,플랫폼,쉘,컴파일러 등이 있다. 그런 것들을 개발하는 직종을 '시스템 프로그래머'라고 한다.
+
+  * Light Weight Process 라고도 함
+  * 프로세스
+    - 프로세스 간에는 각 프로세스의 데이터 접근이 불가 (병렬 처리를 위해 IPC를 꼭 써야함)
+  * 스레드
+    - 하나의 프로세스에 여러개의 스레드 생성 가능
+    - 스레드들은 동시에 실행 가능
+    - 프로세스 안에 있으므로, 프로세스의 데이터를 모두 접근 가능 (가장 큰 장점: IPC를 사용할 필요가 없다.)
+
+---
+## 스레드
+### Thread는 각기 실행이 가능한 stack 존재
+![Thread_stack](https://i.stack.imgur.com/xAPl5.jpg)
+> 출처 : https://stackoverflow.com/questions/16264118/how-jvm-stack-heap-and-threads-are-mapped-to-physical-memory-or-operation-syste
+
+  * Thread는 하나의 프로세스 안의 stack 영역에 존재하는 하나의 함수로 보면 됨.
+    - process에서 thread를 생성하면 stack영역에 각 thread를 위한 영역이 할당됨.
+    - 각 thread를 위한 PC(program counter),SP(stack pointer)가 존재
+      + thread는 상태 정보를 가지는 레지스터와 스택 영역을 가지고 있고 그 프로세스의 HEAP,DATA,CODE영역은 공유한다.
+    - 그래서 thread는 HEAP,DATA(BSS,DATA),CODE 영역은 공유한다.
+    - 즉, thread 끼리는 별도의 IPC 방법 없이 서로 데이터 공유가 가능하다. (단, 다른 프로세스의 thread와의 데이터 공유는 불가능)
+![Thread_stack1](https://i.stack.imgur.com/yJf50.png)
+> 출처 : https://stackoverflow.com/questions/33221759/c-thread-function-clarification
+
+---
+## Multi Thread(멀티 스레드)
+  * 소프트웨어 병행 작업 처리를 위해 Multi Thread를 이용함
+![Multi_Thread](https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRZaobhfGj-J-rIvYAYMgSkpn7ANQLp6hVRI7G9ITFdZ8kN0Uh48A)
+> 출처 : https://goodgid.github.io/What-is-Multi-Thread/
+
+---
+## 멀티 프로세싱과 Thread
+  * 멀티 프로세싱과 Thread
+<img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRO0oeHNKoYdDxWxaRK-CB4ZpD200zHZifYKPuxRTni297acObo" width="300" height="300" />  
+  > 위의 사진을 보면 JOB이 3개로 나누어져 CPU에 올라가는 것을 볼 수 있다. 그러면 이렇게 하나의 task를 어떻게 여러 개의 task로(병렬적으로) 만들까? **thread** 를 여러개 만들면 가능하다
+
+  * 최근 CPU는 멀티 코어를 가지므로, Thread를 여러 개 만들어,멀티 코어의 활용도를 높임
+![ways_thread](https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS9q5fg8e1N548xvljA_Cw-HFfrYOibE9UHNvoLux_MVqwrsB3c)
