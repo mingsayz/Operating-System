@@ -1208,7 +1208,112 @@ main(){
 ## 멀티 프로세싱과 Thread
   * 멀티 프로세싱과 Thread
 <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRO0oeHNKoYdDxWxaRK-CB4ZpD200zHZifYKPuxRTni297acObo" width="300" height="300" />  
-  > 위의 사진을 보면 JOB이 3개로 나누어져 CPU에 올라가는 것을 볼 수 있다. 그러면 이렇게 하나의 task를 어떻게 여러 개의 task로(병렬적으로) 만들까? **thread** 를 여러개 만들면 가능하다
+  > 위의 사진을 보면 JOB이 3개로 나누어져 CPU에 올라가는 것을 볼 수 있다. 그러면 이렇게 하나의 task를 어떻게 여러 개의 task로(병렬적으로) 만들까? thread 를 여러개 만들면 가능하다
 
   * 최근 CPU는 멀티 코어를 가지므로, Thread를 여러 개 만들어,멀티 코어의 활용도를 높임
 ![ways_thread](https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS9q5fg8e1N548xvljA_Cw-HFfrYOibE9UHNvoLux_MVqwrsB3c)
+---
+## Thread의 장점
+  * 1. 사용자에 대한 응답성 향상 (웹 서버 같은 경우, 클라이언트가 html을 요청했을때 thread를 이용하여 클라이언트의 요청을 처리해줌)
+  * 2. 자원 공유 효율
+    - IPC기법과 같이 프로세스간 자원 공유를 위해 번거로운 작업이 필요없음
+    - 프로세스 안에 있으므로, 프로세스의 데이터를 모두 접근가능
+    - 프로세스는 4GB를 사용, 3개가 있으면 총 12GB를 사용하게 될 수도 있음. 스레드는 프로세스 안에 존재하고 영역을 공유하기 때문에 스레드 3개가 생성되더라도 4GB그대로 유지
+  * 3. 작업이 분리되어 코드가 간결
+
+---
+## Thread의 단점
+  * 스레드중 한 스레드만 문제가 있어도, 전체 프로세스가 영향을 받음
+  * 스레드를 많이 생성하면, Context Switching이 많이 일어나, 성능 저하
+    - Ex ) 리눅스 OS에서는 Thread를 Process와 같이 다룸
+      + 스레드를 많이 생성하면, 모든 스레드를 스케쥴링해야 하므로, Context Switching이 빈번할 수 밖에 없음
+
+---
+## Thread vs Process
+  * 프로세스는 독립적,스레드는 프로세스의 서브셋
+  * 프로세스는 각각 독립적인 자원을 가짐, 스레드는 프로세스 자원 공유
+  * 프로세스는 자신만의 주소영역을 가짐, 스레드는 주소영역 공유
+  * 프로세스간에는 IPC기법으로 통신해야함, 스레드는 필요 없음
+
+---
+## PThread
+  * POSIX 스레드(POSIX Threads, 약어: PThread)
+    - Thread 관련 표준 API (c언어 단에서)
+
+---
+## 정리
+  * Thread 개념 정리
+    - 프로세스와 달리 스레드간 자원 공유
+  * 스레드 장점
+    - CPU 활용도를 높임
+    - 성능 개선 기능
+    - 응답성 향상
+    - 자원 공유 효율(IPC를 안써도 됨)
+  * 스레드 단점
+    - 하나의 스레드 문제가, 프로세스 전반에 영향을 미침
+    - 여러 스레드 생성시 성능 저하 기능
+
+---
+## Thread 동기화(Synchronization) 이슈
+  * 스레드 A,B,C가 있을 때 영역을 공유하기 때문에 각 스레드가 변수의 내용을 바꾸었을 때, 다른 스레드가 그 변수를 읽었을 때 문제가 발생할 수 있다.
+  * 그래서 스레드 관리가 필요함
+
+  ```py
+    import threading
+
+    g_count = 0 # 전역변수 선언
+
+    def thread_main():
+      global g_count  # g_count란 전역 변수를 사용하겠다는 의미
+      for i in range(10000):
+        g_count = g_count + 1
+
+    threads = []
+
+    for i in range(50):
+      th = threading.Thread(target = thread_main)
+      threads.append(th)
+
+    for th in threads:
+      th.start()
+
+    for th in threads:
+      th.join() # 다른 스레드가 다 끝날때 까지 기다려주는 함수, 다 끝나면 내려가서 print 함수 호출 ===> 동기화(기간을 맞춘다)
+
+    print('g_count = ',g_count)
+
+    # 다음의 경우 문제가 된다. (반목문 횟수를 1000000 이상 증가할 경우, Thread가 온전히 100000번 반복되지 않고, 다른 Thread로 Context Switching)
+    # 이때 어느 부분을 실행하다가 Context switching 될지는 알 수 없으므로, 게산상의 오류가 발생
+    # Context switching시에 값을 저장하고 있던 register 값은 실행중단 이전의 값으로 모두 복원된다.
+    # 이미 스레드가 g_count 값을 저장하고 난 후에 컨텍스트 스위칭이 되었다면, 다시 스레드가 실행할 때 최신화된 g_count가 아닌 이전의 g_count 값을 가지고 있으므로 덧셈이 누락된다.  
+  ```
+
+  ```py
+    import threading
+
+    g_count = 0
+
+    def thread_main():
+      global g_count  
+      lock.acquire() # 임계영역을 정해서 한 번에 한 스레드만 이 코드를 사용할수 있도록 한다. (열쇠라고 생각하면, 중간에 Context switching이 되어 다른 스레드가 이 영역을 요청해도 하나의 스레드가 아직 열쇠를 가지고 있으므로 다른 스레드는 이 코드를 실행할 수 없음 )
+      for i in range(1000000):
+        g_count = g_count + 1
+      lock.release() # 임계영역 해제 ( 열쇠 반환 )
+
+    threads = []
+    lock = threading.Lock()
+
+    for i in range(50):
+      th = threading.Thread(target = thread_main)
+      threads.append(th)
+
+    for th in threads:
+      th.start()
+
+    for th in threads:
+      th.join()
+
+    print('g_count = ',g_count)
+  ```
+---
+##
