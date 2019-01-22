@@ -1314,6 +1314,8 @@ main(){
       th.join()
 
     print('g_count = ',g_count)
+
+    # mutual exclusion 사용
   ```
 ---
 ##
